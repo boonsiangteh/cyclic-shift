@@ -1,4 +1,4 @@
-use std::{error::Error, io::{self, BufRead, Read}};
+use std::{error::Error, io::{self, BufRead}, num::ParseIntError};
 
 fn main() -> Result<(), Box<dyn Error>> {
     
@@ -24,10 +24,32 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         line_buffer.clear();
         handle.read_line(&mut line_buffer)?;
-        let binary_string = line_buffer.trim().split("").map(|x| x.parse::<i32>().unwrap()).collect::<Vec<i32>>();
+        // bug here. need to 
 
-        println!("{}", binary_string);
+        // let result_vector = line_buffer.trim().split("").filter_map(|x| x.parse::<i32>().ok()).collect::<Vec<i32>>();
+
+        let result_vector = line_buffer.trim().chars().map(|x| x.to_digit(10).ok_or("not a digit")).collect::<Result<Vec<_>,_>>();
+        println!("result_vector: {:?}", result_vector);
+
+        // for r in result_vector {
+        //     match r {
+        //         Ok(digit) => print!("{} ", digit),
+        //         Err(err) => print!("{} ", err),
+        //     }
+        // }
+
+        // for r in result_vector {
+        //     println!("{:?}", r);
+        // }**
+
+        match result_vector {
+            Ok(r) => println!("{:?}", r),
+            Err(e) => println!("{:?}", e),
+        }
+        println!();
+        println!();
     } 
+
     
 
     Ok(())
