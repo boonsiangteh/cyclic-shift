@@ -1,3 +1,4 @@
+use core::num;
 use std::{error::Error, io::{self, BufRead}, num::ParseIntError};
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -24,29 +25,47 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         line_buffer.clear();
         handle.read_line(&mut line_buffer)?;
-        // bug here. need to 
 
-        // let result_vector = line_buffer.trim().split("").filter_map(|x| x.parse::<i32>().ok()).collect::<Vec<i32>>();
-
-        let result_vector = line_buffer.trim().chars().map(|x| x.to_digit(10).ok_or("not a digit")).collect::<Result<Vec<_>,_>>();
+        let mut result_vector = line_buffer.trim().chars().map(|x| x.to_digit(10).ok_or("not a digit")).collect::<Result<Vec<_>,_>>()?;
         println!("result_vector: {:?}", result_vector);
 
-        // for r in result_vector {
-        //     match r {
-        //         Ok(digit) => print!("{} ", digit),
-        //         Err(err) => print!("{} ", err),
-        //     }
-        // }
 
-        // for r in result_vector {
-        //     println!("{:?}", r);
-        // }**
+        let mut highest_count = 0;
+        let mut which_rotation = 0;
+        
+        for j in 1..n+1 {
 
-        match result_vector {
-            Ok(r) => println!("{:?}", r),
-            Err(e) => println!("{:?}", e),
+            result_vector.rotate_left(1);
+            println!("After rotation {}: {:?}", j, result_vector);
+
+            let mut total_base10 = 0;
+
+            for l in 0..n {
+                total_base10 += result_vector[l as usize] * 2_u32.pow((n - 1 - l) as u32);
+                
+            }
+
+            println!("{:?}", total_base10);
+
+            if total_base10 > highest_count {
+                highest_count = total_base10;
+                which_rotation = j;
+            }
+
         }
-        println!();
+
+
+
+        println!("Highest count: {:?}, which_rotation: {:?}", highest_count, which_rotation);
+        
+        let mut number_of_cyclic_shift_ops = which_rotation;
+        for _ in 1..k {
+            number_of_cyclic_shift_ops += n;
+        }
+
+        println!("Number of cyclic shift operations: {}", number_of_cyclic_shift_ops);
+
+
         println!();
     } 
 
